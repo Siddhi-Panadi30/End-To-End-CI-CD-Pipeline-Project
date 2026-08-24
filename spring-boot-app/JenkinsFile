@@ -33,13 +33,13 @@ pipeline {
       environment {
         DOCKER_IMAGE = "siddhip30/ultimate-cicd:${BUILD_NUMBER}"
         // DOCKERFILE_LOCATION = "spring-boot-app/Dockerfile"
-        REGISTRY_CREDENTIALS = credentials('username : siddhip30 ,password : dckr_pat_6wgQ1y0lyTByM1qRSbz7I1S99ew')
+        REGISTRY_CREDENTIALS = credentials('docker-cred')
       }
       steps {
         script {
             sh 'cd spring-boot-app && docker build -t ${DOCKER_IMAGE} .'
             def dockerImage = docker.image("${DOCKER_IMAGE}")
-            docker.withRegistry('https://index.docker.io/v1/', "username : siddhip30 ,password : dckr_pat_6wgQ1y0lyTByM1qRSbz7I1S99ew") {
+            docker.withRegistry('https://index.docker.io/v1/', "docker-cred") {
                 dockerImage.push()
             }
         }
@@ -51,10 +51,10 @@ pipeline {
             GIT_USER_NAME = "Siddhi-Panadi30"
         }
         steps {
-            withCredentials([string(credentialsId: 'Siddhi-Panadi30', variable: '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')]) {
+            withCredentials([string(credentialsId: 'github', variable: 'GITHUB_TOKEN')]) {
                 sh '''
                     git config user.email "siddhipanadi@gmail.com"
-                    git config user.name "Siddhi Panadi"
+                    git config user.name "Siddhi-Panadi30"
                     BUILD_NUMBER=${BUILD_NUMBER}
                     sed -i "s/replaceImageTag/${BUILD_NUMBER}/g" spring-boot-app-manifests/deployment.yml
                     git add spring-boot-app-manifests/deployment.yml
